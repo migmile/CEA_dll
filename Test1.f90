@@ -41,7 +41,7 @@
      
      
 !     params(8)=-10000       ! pressure  ???
-    log_path(1)=""!c:\cea_dll"
+    log_path(1)="c:\cea_dll"
 !    call CEA_INIT(log_path,names,params,reslt)
      call    NTDC_INIT(log_path,names,symbols,params,reslt)    
     if (reslt<0) then

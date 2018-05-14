@@ -294,28 +294,30 @@
     
       
 ! ___________________________________________________________________________    
-      subroutine NTDC_ROCKET(phi,Acat_,Supar_,res,strings,x_)
+      subroutine NTDC_ROCKET(phi,Acat_,Nfz_,Supar_,res,strings,x_)
 #if defined (_DLL_V_)      
 !DEC$ ATTRIBUTES DLLEXPORT,STDCALL, REFERENCE::NTDC_ROCKET
 !DEC$ ATTRIBUTES REFERENCE :: phi
-!DEC$ ATTRIBUTES REFERENCE :: res,Acat_,Supar_  
+!DEC$ ATTRIBUTES REFERENCE :: res,Acat_,Nfz_,Supar_  
 !DEC$ ATTRIBUTES REFERENCE :: strings
 !DEC$ ATTRIBUTES REFERENCE :: x_
 #endif
       implicit none
        interface
-        subroutine Rocket1(phi,Acat_,Supar_,Res,strings,x_)
+        subroutine Rocket1(phi,Acat_,Nfz_,Supar_,Res,strings,x_)
       	real*8 Res(*),Acat_,Supar_,phi 
+          integer Nfz_
           real, intent(inout) :: x_(100,10)
 	    character(15), intent(inout) :: strings(100)          
         end subroutine Rocket1
        end interface
        
        real*8 Res(200),Acat_,Supar_,phi 
+       integer Nfz_
        real, intent(inout) :: x_(100,10)
 	 character(15), intent(inout) :: strings(100)
       
-       call Rocket1(phi,Acat_,Supar_,res,strings,x_)
+       call Rocket1(phi,Acat_,Nfz_,Supar_,res,strings,x_)
       end subroutine NTDC_ROCKET
 
 ! ___________________________________________________________________________    

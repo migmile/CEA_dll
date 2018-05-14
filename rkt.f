@@ -1,34 +1,73 @@
-      subroutine Rocket1(phi,Acat_,Supar_,Results,ProdNames_,x_)
+      subroutine Rocket1(phi,Acat_,Nfz_,Supar_,Results,ProdNames_,x_)
       
       implicit none
       INCLUDE 'cea.inc'      
       real*8 Results(*),phi      
       real  x_(100,10)
-	  character(15), intent(inout) :: ProdNames_(100)  
-      real*8 xyz,denmtr,eratio,Acat_,Supar_
+	character(15), intent(inout) :: ProdNames_(100)  
+      real*8 xyz,denmtr,eratio,
+     & Acat_,                     ! 
+     & Supar_
+      Integer Nfz_        ! № сечения заморозки
       INTEGER DATE_TIME (8)
       integer i
       integer, parameter:: NOutElements=20
-      
+     
+! INFINITE-AREA COMBUSTOR (i_fac==1)
+! The user may choose for all calculated points to assume chemical equilibrium or he may choose to have the products frozen after a specified point.   
+! Both of these options may be selected for any run.   Freeze points selections are combustion, throat, or exit1.   
+! The exit1 value will be one of the Optional Exit Points described below.   
+! CEAgui will pick the first exit value listed starting with the left column for Pin/Pe.    
+! All points are isentropic with respect to the combustion point.
 
-!     FINITE AREA COMBUSTOR 
+
+! FINITE-AREA COMBUSTOR (i_fac!=1)
+! Because of the difficulty in defining the freeze point for this option, only equilibrium calculations are permitted.
+! The chamber in the FAC model is assumed to have a constant cross-sectional area.   
+! In this chamber combustion is a non-isentropic, irreversible process.   During the burning process, 
+! part of the energy released is used to raise the entropy, and the pressure drops.   Expansion in the nozzle is assumed to be isentropic.
+! One of two input parameters is required, either the contraction ratio Ac/At or the mass flow rate per combustor area Ac.   
+! Output includes values for Ac/At and Pinj/Pinf in addition to properties and composition for the injector, combustor, throat, and optional exit points.
+      
+!   if   FINITE AREA COMBUSTOR
+!     nfz - <0 - equlibrium
+!     freezing point  - 0,1,2 - frozen after combustor, throat, exit1       
+      
+               
+      rkt=1
       Nsub=0		! количество сечений в дозвуковой части сопла
-      if (Acat_>0) then
-               Fac = .TRUE.
-               Acat=Acat_   !!!!
+      
+      if (Acat_>0) then       !     FINITE AREA COMBUSTOR
+               Fac = .TRUE.       
+               Acat=Acat_   
       else
                Fac = .false.
       end if          
 
+      Nfz=Nfz_    
+      if (fac==.TRUE.) then      ! IAC
+          Eql = .TRUE.
+          Nfz=1
+          Froz = .false. 
+      else                    ! FAC
+          ! заморозка!!!
+		if (Nfz>0 .and. Nfz<3 ) then     ! если заданы NFZ - считает замор.
+              Eql=.false.
+              Froz = .TRUE. 
+          else
+              Eql=.TRUE.
+              Froz = .false. 
+              Nfz=1
+          end if
+      end if
+      
       if (Supar_>0) then
        Supar(1)=Supar_       ! задана отн. площадь выхода (сверхзвук)
        Nsup=1
       else
        Nsup=0
       end if 
-               
-      rkt=1
-      Eql = .TRUE.
+
   ! number of points of chamber pressure
       Np=1
       Nt=1

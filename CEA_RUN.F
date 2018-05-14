@@ -58,7 +58,7 @@
 !     инициализация       
 #if defined (_DLL_V_)
 !DEC$ ATTRIBUTES DLLEXPORT,STDCALL,REFERENCE::NTDC_INIT
-!DEC$ ATTRIBUTES  ALIAS:"ntdc_init" :: NTDC_INIT
+!DEC$ ATTRIBUTES  ALIAS:"NTDC_INIT" :: NTDC_INIT
 !DEC$ ATTRIBUTES REFERENCE :: names
 !DEC$ ATTRIBUTES REFERENCE :: symbols
 !DEC$ ATTRIBUTES REFERENCE :: log_path
@@ -110,7 +110,11 @@
       if (Len(log_path(1))>0) then
           cmLog_dir_name=trim(log_path(1))
           n=len(trim(cmLog_dir_name))+1
-          cmLog_dir_name(n:n)='\'
+          if (n<256)  then
+              cmLog_dir_name(n:n)='\'
+          else
+              cmLog_dir_name(256:256)='\'
+          end if
       endif
       call WrtError(REAL_CLOCK(1))      
       call WrtError(REAL_CLOCK(2))      
